@@ -3,14 +3,18 @@ package medina.juanantonio.mlqrscanner
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import medina.juanantonio.mlqrscanner.library.Scanner
+import medina.juanantonio.mlqrscanner.library.common.Constants.BarcodeIntent.BARCODE_FORMAT_RESULT
 import medina.juanantonio.mlqrscanner.library.common.Constants.BarcodeIntent.BARCODE_RAW_RESULT
+import medina.juanantonio.mlqrscanner.library.common.Constants.BarcodeIntent.BARCODE_TYPE_RESULT
+import medina.juanantonio.mlqrscanner.library.common.extensions.getQRType
+import medina.juanantonio.mlqrscanner.library.data.QRHandler
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,9 +64,14 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == REQUEST_QR) {
-            val result = data?.getStringExtra(BARCODE_RAW_RESULT)
+            val rawResult = data?.getStringExtra(BARCODE_RAW_RESULT) ?: ""
+            val resultFormat = data?.getIntExtra(BARCODE_FORMAT_RESULT, 0) ?: 0
+            val resultType = data?.getIntExtra(BARCODE_TYPE_RESULT, 0) ?: 0
+
             val resultTextView = findViewById<TextView>(R.id.textview_result)
-            resultTextView.text = result
+            resultTextView.text = rawResult
+
+            QRHandler(this).handleResult(rawResult, resultType.getQRType())
         }
     }
 }

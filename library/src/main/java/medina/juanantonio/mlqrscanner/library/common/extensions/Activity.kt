@@ -6,12 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.mlkit.vision.barcode.Barcode
 import medina.juanantonio.mlqrscanner.library.common.Constants.BarcodeIntent.BARCODE_FORMAT_RESULT
 import medina.juanantonio.mlqrscanner.library.common.Constants.BarcodeIntent.BARCODE_RAW_RESULT
-import medina.juanantonio.mlqrscanner.library.features.QRScannerXActivity
+import medina.juanantonio.mlqrscanner.library.common.Constants.BarcodeIntent.BARCODE_TYPE_RESULT
 
 fun AppCompatActivity.sendBarcodeResult(barcode: Barcode) {
     val intent = intent.apply {
         putExtra(BARCODE_RAW_RESULT, barcode.rawValue)
         putExtra(BARCODE_FORMAT_RESULT, barcode.format)
+        putExtra(BARCODE_TYPE_RESULT, barcode.valueType)
     }
     setResult(Activity.RESULT_OK, intent)
     finish()

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="medina.juanantonio.mlqrscanner.library">
+
     <!--
  CameraX libraries require minSdkVersion 21, while this quickstart app
     supports low to 16. Needs to use overrideLibrary to make the merger tool
@@ -9,7 +10,7 @@
     minSdkVersion value. In code, will check SDK version, before calling CameraX
     APIs.
     -->
-    <uses-sdk tools:overrideLibrary="           androidx.camera.camera2, androidx.camera.core,           androidx.camera.view, androidx.camera.lifecycle" />
+    <uses-sdk tools:overrideLibrary="androidx.camera.camera2, androidx.camera.core, androidx.camera.view, androidx.camera.lifecycle" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -18,7 +19,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application>
-        <activity android:name=".features.QRScannerXActivity"></activity>
+        <activity android:name=".features.QRScannerXActivity" />
         <activity android:name=".features.QRScannerActivity" />
     </application>
 
