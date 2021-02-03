@@ -10,7 +10,7 @@ import medina.juanantonio.mlqrscanner.library.features.QRScannerXActivity
 object Scanner {
     private val cameraActivity: Class<*>
         get() {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                 QRScannerXActivity::class.java
             else
                 QRScannerActivity::class.java

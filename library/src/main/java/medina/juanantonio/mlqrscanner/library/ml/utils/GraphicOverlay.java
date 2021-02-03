@@ -35,13 +35,6 @@ import java.util.List;
  *
  * <p>Associated {@link Graphic} items should use the following methods to convert to view
  * coordinates for the graphics that are drawn:
- *
- * <ol>
- *   <li>{@link Graphic#scale(float)} adjusts the size of the supplied value from the image scale
- *       to the view scale.
- *   <li>{@link Graphic#translateX(float)} and {@link Graphic#translateY(float)} adjust the
- *       coordinate from the image's coordinate system to the view coordinate system.
- * </ol>
  */
 public class GraphicOverlay extends View {
   private final Object lock = new Object();
@@ -51,15 +44,6 @@ public class GraphicOverlay extends View {
 
   private int imageWidth;
   private int imageHeight;
-  // The factor of overlay View size to image size. Anything in the image coordinates need to be
-  // scaled by this amount to fit with the area of overlay View.
-  private float scaleFactor = 1.0f;
-  // The number of horizontal pixels needed to be cropped on each side to fit the image with the
-  // area of overlay View after scaling.
-  private float postScaleWidthOffset;
-  // The number of vertical pixels needed to be cropped on each side to fit the image with the
-  // area of overlay View after scaling.
-  private float postScaleHeightOffset;
   private boolean isImageFlipped;
   private boolean needUpdateTransformation = true;
 
@@ -69,7 +53,7 @@ public class GraphicOverlay extends View {
    * instances to the overlay using {@link GraphicOverlay#add(Graphic)}.
    */
   public abstract static class Graphic {
-    private GraphicOverlay overlay;
+    private final GraphicOverlay overlay;
 
     public Graphic(GraphicOverlay overlay) {
       this.overlay = overlay;
@@ -79,58 +63,15 @@ public class GraphicOverlay extends View {
      * Draw the graphic on the supplied canvas. Drawing should use the following methods to convert
      * to view coordinates for the graphics that are drawn:
      *
-     * <ol>
-     *   <li>{@link Graphic#scale(float)} adjusts the size of the supplied value from the image
-     *       scale to the view scale.
-     *   <li>{@link Graphic#translateX(float)} and {@link Graphic#translateY(float)} adjust the
-     *       coordinate from the image's coordinate system to the view coordinate system.
-     * </ol>
-     *
      * @param canvas drawing canvas
      */
     public abstract void draw(Canvas canvas);
-
-    /** Adjusts the supplied value from the image scale to the view scale. */
-    public float scale(float imagePixel) {
-      return imagePixel * overlay.scaleFactor;
-    }
-
-    /** Returns the application context of the app. */
-    public Context getApplicationContext() {
-      return overlay.getContext().getApplicationContext();
-    }
-
-    public boolean isImageFlipped() {
-      return overlay.isImageFlipped;
-    }
-
-    /**
-     * Adjusts the x coordinate from the image's coordinate system to the view coordinate system.
-     */
-    public float translateX(float x) {
-      if (overlay.isImageFlipped) {
-        return overlay.getWidth() - (scale(x) - overlay.postScaleWidthOffset);
-      } else {
-        return scale(x) - overlay.postScaleWidthOffset;
-      }
-    }
-
-    /**
-     * Adjusts the y coordinate from the image's coordinate system to the view coordinate system.
-     */
-    public float translateY(float y) {
-      return scale(y) - overlay.postScaleHeightOffset;
-    }
 
     /**
      * Returns a {@link Matrix} for transforming from image coordinates to overlay view coordinates.
      */
     public Matrix getTransformationMatrix() {
       return overlay.transformationMatrix;
-    }
-
-    public void postInvalidate() {
-      overlay.postInvalidate();
     }
   }
 
@@ -156,14 +97,6 @@ public class GraphicOverlay extends View {
     }
   }
 
-  /** Removes a graphic from the overlay. */
-  public void remove(Graphic graphic) {
-    synchronized (lock) {
-      graphics.remove(graphic);
-    }
-    postInvalidate();
-  }
-
   /**
    * Sets the source information of the image being processed by detectors, including size and
    * whether it is flipped, which informs how to transform image coordinates later.
@@ -183,22 +116,20 @@ public class GraphicOverlay extends View {
     postInvalidate();
   }
 
-  public int getImageWidth() {
-    return imageWidth;
-  }
-
-  public int getImageHeight() {
-    return imageHeight;
-  }
-
   private void updateTransformationIfNeeded() {
     if (!needUpdateTransformation || imageWidth <= 0 || imageHeight <= 0) {
       return;
     }
     float viewAspectRatio = (float) getWidth() / getHeight();
     float imageAspectRatio = (float) imageWidth / imageHeight;
-    postScaleWidthOffset = 0;
-    postScaleHeightOffset = 0;
+    // The number of horizontal pixels needed to be cropped on each side to fit the image with the
+    // area of overlay View after scaling.
+    float postScaleWidthOffset = 0;
+    // area of overlay View after scaling.
+    float postScaleHeightOffset = 0;
+    // The factor of overlay View size to image size. Anything in the image coordinates need to be
+    // scaled by this amount to fit with the area of overlay View.
+    float scaleFactor;
     if (viewAspectRatio > imageAspectRatio) {
       // The image needs to be vertically cropped to be displayed in this view.
       scaleFactor = (float) getWidth() / imageWidth;

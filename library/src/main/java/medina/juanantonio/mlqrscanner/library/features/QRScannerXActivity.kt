@@ -27,7 +27,7 @@ import medina.juanantonio.mlqrscanner.library.ml.utils.CameraXViewModel
 import medina.juanantonio.mlqrscanner.library.ml.utils.GraphicOverlay
 import medina.juanantonio.mlqrscanner.library.ml.utils.VisionImageProcessor
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+@RequiresApi(Build.VERSION_CODES.KITKAT)
 class QRScannerXActivity : AppCompatActivity(), BarcodeListener {
 
     companion object {
