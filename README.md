@@ -23,3 +23,4 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 
 ## Credits
 - [ML Kit Vision Quickstart Demo App](https://github.com/googlesamples/mlkit/tree/master/android/vision-quickstart)
+- 
